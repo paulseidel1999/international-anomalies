@@ -1,0 +1,56 @@
+# Data directories
+data/raw/
+data/interim/
+data/processed/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# Virtual environments
+venv/
+env/
+.env/
+.venv/
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Testing
+.coverage
+htmlcov/
+.pytest_cache/
+test.py
+
+# Logs
+./logs
+*.log
+
+# OS specific files
+.DS_Store
+Thumbs.db
+
+# Large files that might accidentally get created
+*.parquet
+*.feather
+*.arrow
+*.csv
+*.xlsx
+*.zip
+*.tar.gz
+
+# Exception for small test files if needed
+!tests/data/**/*.csv
+!tests/data/**/*.parquet
