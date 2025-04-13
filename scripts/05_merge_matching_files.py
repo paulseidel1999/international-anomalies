@@ -46,6 +46,7 @@ class MatchingFileMerger:
                     format='%d/%m/%Y',
                     errors='coerce'
                 )
+                # For duplicate entries (DatastreamID, WorldscopeID) keep the most recent
                 combined_df = combined_df.sort_values(by=['_temp_date'], ascending=False)
                 combined_df = combined_df.drop_duplicates(subset=self.key_columns, keep='first')
                 combined_df = combined_df.drop(columns=['_temp_date'])

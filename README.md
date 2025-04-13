@@ -3,7 +3,7 @@
 1. Clone the repository:
    ```bash
    git clone https://github.com/LudwigFritsch/international-anomalies.git
-   cd financial-data-pipeline
+   cd international-anomalies
    ```
 
 2. Create a virtual environment (recommended):
