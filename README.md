@@ -2,7 +2,7 @@
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/financial-data-pipeline.git
+   git clone https://github.com/LudwigFritsch/international-anomalies.git
    cd financial-data-pipeline
    ```
 
