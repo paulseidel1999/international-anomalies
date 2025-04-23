@@ -37,7 +37,9 @@ class WorldscopeProcessor:
         self.root_dir = Path(__file__).resolve().parents[1]
         self.raw_dir = self.root_dir / "data" / "raw"
         self.interim_dir = self.root_dir / "data" / "interim"
-        self.ws_dir = self.raw_dir / "Worldscope"
+
+        # (1) Adjusted path to "Anomaly Publication/Data/Worldscope"
+        self.ws_dir = self.raw_dir / "Anomaly Publication" / "Data" / "Worldscope"
 
         self.interim_dir.mkdir(parents=True, exist_ok=True)
         self.output_dir = self.interim_dir / "worldscope"
@@ -45,7 +47,6 @@ class WorldscopeProcessor:
 
     def find_txt_files(self):
         txts = list(self.ws_dir.rglob("*.txt"))
-        
         logger.info(f"Found {len(txts)} Worldscope .txt files")
         return txts
 
@@ -55,11 +56,9 @@ class WorldscopeProcessor:
             return WS_FILE_COLUMNS[file_type]
         else:
             raise ValueError(f"Unknown Worldscope file type: {file_type}")
-        
 
     def convert_to_parquet(self, input_file_path, chunk_size=100_000, separator='|'):
         input_file_path = Path(input_file_path)
-
         input_filename = input_file_path.stem
         output_file = self.output_dir / f"{input_filename}.parquet"
 
@@ -67,6 +66,7 @@ class WorldscopeProcessor:
         if file_type_match and file_type_match.group(1) in WS_FILE_COLUMNS:
             schema = WS_FILE_COLUMNS[file_type_match.group(1)]
         else:
+            # fallback: try to read first line as header
             with open(input_file_path, 'r', encoding='windows-1252') as f:
                 first_line = f.readline().strip()
                 schema = first_line.split(separator)
@@ -85,7 +85,9 @@ class WorldscopeProcessor:
                 encoding='windows-1252'
             ):
                 if "point_date" in chunk_df.columns:
-                    chunk_df["point_date"] = pd.to_datetime(chunk_df["point_date"], format="%Y%m%d", errors="coerce")
+                    chunk_df["point_date"] = pd.to_datetime(
+                        chunk_df["point_date"], format="%Y%m%d", errors="coerce"
+                    )
                 for col in ["fiscal_period", "item_code"]:
                     if col in chunk_df.columns:
                         chunk_df[col] = pd.to_numeric(chunk_df[col], errors="coerce")
@@ -110,7 +112,6 @@ class WorldscopeProcessor:
             if writer:
                 writer.close()
 
-        
     def run(self):
         logger.info("Starting Worldscope .txt processing")
 
@@ -123,15 +124,17 @@ class WorldscopeProcessor:
             logger.warning("No .txt files found!")
             return
 
-        num_processes = mp.cpu_count() 
-        logger.info(f"Using {num_processes} CPU cores for parallel processing")
+        # Original: num_processes = mp.cpu_count()
+        # We'll still read that, but we'll keep the concurrency lower for threads
+        num_processes = mp.cpu_count()
+        logger.info(f"Detected {num_processes} CPU cores")
+
+        # (2) Limit the ThreadPool to avoid resource or concurrency issues
+        max_threads = min(os.cpu_count(), 4)
+        logger.info(f"Using {max_threads} threads for processing")
 
         success_count = 0
         total_rows = 0
-
-        max_threads = os.cpu_count()
-
-        max_threads = max_threads
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=max_threads) as executor:
             with tqdm(total=len(txt_files), desc="Processing WS .txt files") as pbar:
@@ -145,8 +148,10 @@ class WorldscopeProcessor:
                         total_rows += row_count
                     pbar.update(1)
 
-
-        logger.success(f"Worldscope processing complete: {success_count}/{len(txt_files)} files successfully processed")
+        logger.success(
+            f"Worldscope processing complete: "
+            f"{success_count}/{len(txt_files)} files successfully processed"
+        )
         logger.info(f"Total rows processed: {total_rows:,}")
 
         return success_count, total_rows
@@ -154,7 +159,6 @@ class WorldscopeProcessor:
 def main():
     processor = WorldscopeProcessor()
     processor.run()
-
 
 if __name__ == "__main__":
     main()

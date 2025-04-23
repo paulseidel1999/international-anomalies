@@ -42,13 +42,47 @@ def main():
     
     
     pipeline_steps = [
+
+#Extraction process and DS setup
         ("Extract data", "scripts/01_extract_data.py"),
         ("Process Datastream data", "scripts/02_process_ds.py"),
         ("Process Worldscope data", "scripts/03_process_ws.py"),
         ("Process matching files", "scripts/04_process_matching_files.py"),
         ("Merge matching files", "scripts/05_merge_matching_files.py"),
         ("Merge datastream files", "scripts/06_merge_ds_files.py"),
+        ("Merge datastream and Matching", "scripts/07_merge_ds_mts.py"),
+        #Placeholder: Data clearning DS: Drop missing matching variable, no value
+#Prepare WS Data
+        #Merge WS Values with PRD Data
+        ("Add Period info WS data", "scripts/08_merge_prd_in_WS.py"),        #for FV, Ratios, Suppl. and Current
+        #Data cleaning WS: Drop: No PRD data
+        ("Drop if missing PRD", "scripts/09_Drop_if_missing_PRD.py"),
+        #Drop if data is old 
+        ("Drop nonrecent data", "scripts/10_Drop_if_not_recent.py"),
+        #Drop unnessary variables
+        ("Drop variables, which are not needed ", "scripts/11_Drop_unnes_var.py"),
+        #Data clearning DS: Drop missing matching variable, no value
+
+        
+#Merge WS into DS        
+        ("Dividing the Worldscope dataset", "scripts/12_WS_division.py"), #Adjust such that date information is kept
+
+
+        
+#Quick data analysis 
+        ("Generate Table 3 Anomaly Time", "scripts/13_Comparison_PITvsFF92.py"),
+        ("Generate Table 3 Anomaly Time", "scripts/14_Comparison_subsample.py"),
+        
+        ("Compute the return predictors in Worldscope", "scripts/15_compute_anomalies.py"),
+        ("Building portfolios based on return predictors FF92", "scripts/16_build_portfolios_ff92.py"),
+        
+        ("Add Period info WS data", "scripts/20_merge_prd_in_WS.py")       
     ]
+
+#
+
+
+
     
     logger.info(f"Starting data pipeline with")
     

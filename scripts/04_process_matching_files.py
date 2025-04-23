@@ -13,7 +13,7 @@ class MatchingFileProcessor:
         self.root_dir = Path(__file__).resolve().parents[1]
         self.raw_dir = self.root_dir / "data" / "raw"
         self.interim_dir = self.root_dir / "data" / "interim"
-        self.matching_dir = self.raw_dir / "Datastream" / "Universal Matching File"  # Path to matching files
+        self.matching_dir = self.raw_dir / "Anomaly Publication" / "Data" / "Datastream" / "Universal Matching File"  # Path to matching files
 
         self.interim_dir.mkdir(parents=True, exist_ok=True)
         self.output_dir = self.interim_dir / "universal matching file"
